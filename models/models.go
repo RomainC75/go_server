@@ -39,3 +39,10 @@ func GetBooks(b *[]Book) error {
 	}
 	return nil
 }
+
+func GetBookById(b *Book, key string) error {
+	if err := db.DB.First(&b, key).Error; err != nil {
+		return err
+	}
+	return nil
+}

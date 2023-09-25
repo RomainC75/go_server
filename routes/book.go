@@ -31,7 +31,7 @@ func AddBook(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	// }
 }
 
-func FindBook(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func ListBooks(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	var book []models.Book
 
 	err := models.GetBooks(&book)
@@ -47,4 +47,21 @@ func FindBook(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(by)
+}
+
+func GetBook(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	var book models.Book
+	id := p.ByName("id")
+	fmt.Print("-> ", id)
+	if err := models.GetBookById(&book, id); err != nil {
+		fmt.Print("get by id err: ", err)
+	}
+
+	by, err := json.Marshal(book)
+	if err != nil {
+		fmt.Print("marshall error : ", err)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(by)
+
 }
