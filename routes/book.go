@@ -23,10 +23,28 @@ func AddBook(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 	// fmt.Print("-> ", data)
 
-	(&data).CreateBook()
+	models.CreateBook(&data)
 
 	// if err != nil {
 	// 	http.Error(w, err.Error(), 500)
 	// 	log.Fatalln(err)
 	// }
+}
+
+func FindBook(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	var book []models.Book
+
+	err := models.GetBooks(&book)
+	if err != nil {
+		fmt.Printf("abort")
+	}
+
+	// fmt.Fprintf(w, "%+v", book)
+
+	by, err := json.Marshal(book)
+	if err != nil {
+		fmt.Print("marshall error : ", err)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(by)
 }

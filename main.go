@@ -14,6 +14,7 @@ import (
 func main() {
 	mux := httprouter.New()
 	mux.POST("/book", routes.AddBook)
+	mux.GET("/book", routes.FindBook)
 
 	db := db.Init()
 	db.AutoMigrate(&models.Book{})

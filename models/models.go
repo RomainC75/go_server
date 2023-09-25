@@ -14,17 +14,16 @@ type Book struct {
 	Desc   string `json:"desc"`
 }
 
-func (b *Book) CreateBook() (*Book, error) {
+func CreateBook(b *Book) (*Book, error) {
 
 	fmt.Print("received : ", *b, "\n")
-	fmt.Print("received : ", b, "\n")
 	// book := &Book{}
 	res := db.DB.Create(&b)
 
 	if res.RowsAffected == 0 {
 		return nil, errors.New("error saving todo")
 	}
-	fmt.Print("-> affected", res.RowsAffected)
+	fmt.Print("-> affected", res)
 	// return &pb.Todo{
 	// 	Id:     todo.Id,
 	// 	Title:  todo.Name,
@@ -32,4 +31,11 @@ func (b *Book) CreateBook() (*Book, error) {
 	// 	Desc:   false,
 	// }, nil
 	return nil, nil
+}
+
+func GetBooks(b *[]Book) error {
+	if err := db.DB.Find(b).Error; err != nil {
+		return err
+	}
+	return nil
 }
