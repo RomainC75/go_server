@@ -87,4 +87,11 @@ func DeleteBook(c *gin.Context) {
 		log.Println(err.Error())
 		c.AbortWithStatus(http.StatusNotFound)
 	}
+
+	if err := models.DeleteBook(id); err != nil {
+		log.Println(err.Error())
+		c.AbortWithStatus(http.StatusNotFound)
+	}
+
+	c.JSON(http.StatusOK, nil)
 }

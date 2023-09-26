@@ -53,7 +53,7 @@ func UpdateBook(b *Book, key string) error {
 	return nil
 }
 
-func DeleteBook(book *Book, key string) error {
-	db.DB.Delete(book, key)
+func DeleteBook(key string) error {
+	db.DB.Delete(&Book{}, key)
 	return nil
 }
