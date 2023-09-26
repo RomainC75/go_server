@@ -1,14 +1,13 @@
 package controllers
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/RomainC75/postgres-test/models"
 	"github.com/gin-gonic/gin"
-	"github.com/julienschmidt/httprouter"
 )
 
 func AddBook(c *gin.Context) {
@@ -26,37 +25,66 @@ func AddBook(c *gin.Context) {
 
 }
 
-func ListBooks(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func ListBooks(c *gin.Context) {
 	var book []models.Book
 
 	err := models.GetBooks(&book)
-	if err != nil {
-		fmt.Printf("abort")
-	}
 
-	// fmt.Fprintf(w, "%+v", book)
-
-	by, err := json.Marshal(book)
 	if err != nil {
-		fmt.Print("marshall error : ", err)
+		c.AbortWithStatus(http.StatusNotFound)
+	} else {
+		c.JSON(http.StatusOK, book)
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(by)
 }
 
-func GetBook(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func GetBook(c *gin.Context) {
 	var book models.Book
-	id := p.ByName("id")
-	fmt.Print("-> ", id)
+	id := c.Params.ByName("id")
+
 	if err := models.GetBookById(&book, id); err != nil {
-		fmt.Print("get by id err: ", err)
+		log.Println(err.Error())
+		c.AbortWithStatus(http.StatusNotFound)
 	}
 
-	by, err := json.Marshal(book)
+	c.JSON(http.StatusOK, book)
+}
+
+func UpdateBook(c *gin.Context) {
+	id := c.Params.ByName("id")
+	intId, err := strconv.Atoi(id)
 	if err != nil {
-		fmt.Print("marshall error : ", err)
+		log.Panicln(err.Error())
+		c.AbortWithStatus(http.StatusBadRequest)
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(by)
+	newBook := models.Book{
+		Id: intId,
+	}
+	var oldBook models.Book
 
+	if err := c.BindJSON(&newBook); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
+	if err := models.GetBookById(&oldBook, id); err != nil {
+		log.Panicln(err.Error())
+		c.AbortWithStatus(http.StatusNotFound)
+	}
+
+	if err := models.UpdateBook(&newBook, id); err != nil {
+		log.Println(err.Error())
+		c.AbortWithStatus(http.StatusNotFound)
+	}
+
+	c.JSON(http.StatusOK, newBook)
+
+}
+
+func DeleteBook(c *gin.Context) {
+	var foundBook models.Book
+	id := c.Params.ByName("id")
+
+	if err := models.GetBookById(&foundBook, id); err != nil {
+		log.Println(err.Error())
+		c.AbortWithStatus(http.StatusNotFound)
+	}
 }

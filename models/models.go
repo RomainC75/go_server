@@ -46,3 +46,14 @@ func GetBookById(b *Book, key string) error {
 	}
 	return nil
 }
+
+func UpdateBook(b *Book, key string) error {
+	// need the complete element ?
+	db.DB.Save(&b)
+	return nil
+}
+
+func DeleteBook(book *Book, key string) error {
+	db.DB.Delete(book, key)
+	return nil
+}
