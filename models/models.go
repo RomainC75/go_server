@@ -1,36 +1,27 @@
 package models
 
 import (
-	"errors"
-	"fmt"
+	"time"
 
 	"github.com/RomainC75/postgres-test/db"
 )
 
 type Book struct {
-	Id     int    `json:"id" gorm:"primaryKey"`
-	Title  string `json:"title"`
-	Author string `json:"author"`
-	Desc   string `json:"desc"`
+	Id        int       `json:"id" gorm:"primaryKey"`
+	Title     string    `json:"title"`
+	Author    string    `json:"author"`
+	Desc      string    `json:"desc"`
+	CreatedAt time.Time `json:"createdAt" gorm:"autoCreateTime:false"`
+	UpdatedAt time.Time `json:"updatedAt" gorm:"autoUpdateTime:false"`
 }
 
 func CreateBook(b *Book) (*Book, error) {
-
-	fmt.Print("received : ", *b, "\n")
-	// book := &Book{}
-	res := db.DB.Create(&b)
-
-	if res.RowsAffected == 0 {
-		return nil, errors.New("error saving todo")
+	b.CreatedAt = time.Now()
+	b.UpdatedAt = time.Now()
+	if err := db.DB.Create(b).Error; err != nil {
+		return nil, err
 	}
-	fmt.Print("-> affected", res)
-	// return &pb.Todo{
-	// 	Id:     todo.Id,
-	// 	Title:  todo.Name,
-	// 	Author: todo.Description,
-	// 	Desc:   false,
-	// }, nil
-	return nil, nil
+	return b, nil
 }
 
 func GetBooks(b *[]Book) error {
@@ -49,6 +40,7 @@ func GetBookById(b *Book, key string) error {
 
 func UpdateBook(b *Book, key string) error {
 	// need the complete element ?
+	b.UpdatedAt = time.Now()
 	db.DB.Save(&b)
 	return nil
 }
