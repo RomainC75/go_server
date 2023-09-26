@@ -1,34 +1,29 @@
-package routes
+package controllers
 
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/RomainC75/postgres-test/models"
+	"github.com/gin-gonic/gin"
 	"github.com/julienschmidt/httprouter"
 )
 
-func AddBook(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	fmt.Print("--------")
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	bs := make([]byte, r.ContentLength)
-	r.Body.Read(bs)
-	// body := string(bs)
-
-	var data models.Book
-	if err := json.Unmarshal(bs, &data); err != nil {
-		panic(err)
+func AddBook(c *gin.Context) {
+	var book models.Book
+	if err := c.BindJSON(&book); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 
-	// fmt.Print("-> ", data)
+	if _, err := models.CreateBook(&book); err != nil {
+		log.Println(err.Error())
+	}
+	fmt.Print(book)
 
-	models.CreateBook(&data)
+	c.JSON(http.StatusOK, book)
 
-	// if err != nil {
-	// 	http.Error(w, err.Error(), 500)
-	// 	log.Fatalln(err)
-	// }
 }
 
 func ListBooks(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
