@@ -16,6 +16,7 @@ func main() {
 
 	db := db.Init()
 	db.AutoMigrate(&models.Book{})
+	db.AutoMigrate(&models.User{})
 
 	// newBook := models.Book{
 
