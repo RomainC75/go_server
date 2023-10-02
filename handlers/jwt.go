@@ -5,31 +5,24 @@ import (
 	"os"
 	"time"
 
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 )
 
-type JWTData struct {
-	jwt.StandardClaims
-	CustomClaims map[string]string `json:"custom_claims"`
-}
-
 func GenerateJWTAccessToken(userId string, username string) (string, error) {
-	secretKey := os.Getenv("JWT_TOKEN")
+	secretKey := []byte(os.Getenv("JWT_TOKEN"))
 	fmt.Print("--------", secretKey, "\b")
 	fmt.Print("======\n")
 
-	claims := JWTData{
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Duration(time.Millisecond * 1000 * 60 * 60)).Unix(),
-		},
-		CustomClaims: map[string]string{
-			"user_id":  userId,
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
+		jwt.MapClaims{
 			"username": username,
-		},
+			"exp":      time.Now().Add(time.Hour * 24).Unix(),
+		})
+
+	tokenString, err := token.SignedString(secretKey)
+	if err != nil {
+		return "", err
 	}
 
-	tokenString := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	token, err := tokenString.SignedString(secretKey)
-
-	return token, err
+	return tokenString, nil
 }
