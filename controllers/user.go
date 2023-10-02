@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
+	"github.com/RomainC75/postgres-test/handlers"
 	"github.com/RomainC75/postgres-test/models"
 	"github.com/gin-gonic/gin"
 )
@@ -19,6 +21,10 @@ func SignupUser(c *gin.Context) {
 		log.Println(err.Error())
 	}
 
+	token, err := handlers.GenerateJWTAccessToken(strconv.Itoa(user.Id), user.Username)
+	if err != nil {
+		fmt.Print("-> TOKEN :\n", token)
+	}
 	c.JSON(http.StatusOK, user)
 }
 

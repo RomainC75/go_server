@@ -1,4 +1,4 @@
-package errorHandler
+package handlers
 
 import (
 	"log"

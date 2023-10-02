@@ -7,12 +7,16 @@ import (
 	"github.com/RomainC75/postgres-test/models"
 	"github.com/RomainC75/postgres-test/routes"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 var err error
 
+func init() {
+	godotenv.Load()
+}
+
 func main() {
-	// mux := httprouter.New()
 
 	db := db.Init()
 	db.AutoMigrate(&models.Book{})

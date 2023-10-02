@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -14,7 +15,6 @@ func AddBook(c *gin.Context) {
 	if err := c.BindJSON(&book); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
-
 	if _, err := models.CreateBook(&book); err != nil {
 		log.Println(err.Error())
 	}
@@ -22,6 +22,10 @@ func AddBook(c *gin.Context) {
 }
 
 func ListBooks(c *gin.Context) {
+	if value, isExist := c.Get("middValue"); isExist {
+		fmt.Printf("---> %v\n", value)
+	}
+
 	var book []models.Book
 	err := models.GetBooks(&book)
 	if err != nil {
