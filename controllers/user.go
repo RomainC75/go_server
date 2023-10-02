@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
+	"github.com/RomainC75/postgres-test/handlers"
 	"github.com/RomainC75/postgres-test/models"
 	"github.com/gin-gonic/gin"
 
@@ -58,7 +60,23 @@ func LoginUser(c *gin.Context) {
 		return
 	}
 
-	// isValid := comparePasswords()
+	if isValid := comparePasswords(foundUser.Password, []byte(loginUser.Password)); !isValid {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid password"})
+	}
 
 	fmt.Printf("\n-> login User : %+v // found user : %+v \n", loginUser, foundUser)
+
+	token, err := handlers.GenerateJWTAccessToken(strconv.Itoa(foundUser.Id), foundUser.Username)
+
+	if err != nil {
+		c.AbortWithStatus(http.StatusNotFound)
+		return
+	}
+
+	tokenUser := models.UserToken{
+		Id:       foundUser.Id,
+		Username: foundUser.Username,
+		Token:    token,
+	}
+	c.JSON(http.StatusOK, tokenUser)
 }

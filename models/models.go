@@ -21,6 +21,12 @@ type User struct {
 	UpdatedAt time.Time `json:"updatedAt" gorm:"autoUpdateTime:false"`
 }
 
+type UserToken struct {
+	Id       int    `json:"id" gorm:"primaryKey"`
+	Username string `json:"username"`
+	Token    string `json:"token"`
+}
+
 type LoginUser struct {
 	Username string `json:"username"`
 	Password string `json:"password"`

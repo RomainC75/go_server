@@ -38,8 +38,3 @@ func UpdateUser(u *User, key string) error {
 	db.DB.Save(&u)
 	return nil
 }
-
-// func DeleteUser(key string) error {
-// 	db.DB.Delete(&Book{}, key)
-// 	return nil
-// }
